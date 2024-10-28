@@ -47,7 +47,7 @@ export function streamText(chatRequest: ChatRequest, env: Env, options?: Streami
 
   const coreMessages = convertToCoreMessages(messages);
   return _streamText({
-    model: getModel(currentProvider, currentModel, env),
+    model: getModel(currentProvider, currentModel,api_key, env),
     system: getSystemPrompt(),
     maxTokens: MAX_TOKENS,
     // headers: {
