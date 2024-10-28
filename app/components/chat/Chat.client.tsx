@@ -13,7 +13,7 @@ import { workbenchStore } from '~/lib/stores/workbench';
 import { fileModificationsToHTML } from '~/utils/diff';
 import {
   DEFAULT_MODEL,
-  DEFAULT_PROVIDER,
+  DEFAULT_PROVIDER, getModelListInfo,
   initializeModelList,
   isInitialized,
   MODEL_LIST,
@@ -82,8 +82,9 @@ export const ChatImpl = memo(({ initialMessages, storeMessageHistory }: ChatProp
   const [chatStarted, setChatStarted] = useState(initialMessages.length > 0);
   const [model, setModel] = useState(DEFAULT_MODEL);
   const [provider, setProvider] = useState(DEFAULT_PROVIDER);
-  const [modelList, setModelList] = useState(MODEL_LIST);
-  const [providerList, setProviderList] = useState([...new Set([...MODEL_LIST.map((m) => m.provider), ...PROVIDER_LIST])]);
+  const list = getModelListInfo();
+  const [modelList, setModelList] = useState(list.modelList);
+  const [providerList, setProviderList] = useState(list.providerList);
   // TODO: Add API key
   const [api_key, setApiKey] = useState("");
   const initialize = async () => {

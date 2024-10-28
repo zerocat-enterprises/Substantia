@@ -65,31 +65,32 @@ export function getStaticModels(): ModelInfo[] {
   return [...staticModels];
 }
 export let isInitialized = false;
-type ModelList={
-  modelList:ModelInfo[],
-  providerList:string[]
+
+export type ModelListInfo= {
+  modelList: ModelInfo[],
+  providerList: string[]
 }
-export async function initializeModelList(): Promise<ModelList> {
+
+export async function initializeModelList(): Promise<ModelListInfo> {
   if (isInitialized) {
-    return {
-      modelList:MODEL_LIST,
-      providerList:[...new Set([...MODEL_LIST.map((m) => m.provider),...PROVIDER_LIST ])]
-    }
+    return getModelListInfo();
   }
-  if (IS_SERVER){
+
+  if (IS_SERVER) {
     isInitialized = true;
-    return {
-      modelList:MODEL_LIST,
-      providerList:[...new Set([...MODEL_LIST.map((m) => m.provider),...PROVIDER_LIST ])]
-    }
+    return getModelListInfo();
   }
+
   isInitialized = true;
   const response = await fetch('/api/models');
   MODEL_LIST = (await response.json()) as ModelInfo[];
 
-  return {
-    modelList:MODEL_LIST,
-    providerList:[...new Set([...MODEL_LIST.map((m) => m.provider),...PROVIDER_LIST ])]
+  return getModelListInfo();
+}
 
-  }
+export function getModelListInfo(): ModelListInfo {
+  return {
+    modelList: MODEL_LIST,
+    providerList: [...new Set([...MODEL_LIST.map(m => m.provider), ...PROVIDER_LIST])]
+  };
 }
