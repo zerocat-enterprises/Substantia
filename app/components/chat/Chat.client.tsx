@@ -11,7 +11,14 @@ import { useChatHistory } from '~/lib/persistence';
 import { chatStore } from '~/lib/stores/chat';
 import { workbenchStore } from '~/lib/stores/workbench';
 import { fileModificationsToHTML } from '~/utils/diff';
-import { DEFAULT_MODEL, DEFAULT_PROVIDER, initializeModelList, isInitialized, MODEL_LIST } from '~/utils/constants';
+import {
+  DEFAULT_MODEL,
+  DEFAULT_PROVIDER,
+  initializeModelList,
+  isInitialized,
+  MODEL_LIST,
+  PROVIDER_LIST
+} from '~/utils/constants';
 import { cubicEasingFn } from '~/utils/easings';
 import { createScopedLogger, renderLogger } from '~/utils/logger';
 import { BaseChat } from './BaseChat';
@@ -76,12 +83,12 @@ export const ChatImpl = memo(({ initialMessages, storeMessageHistory }: ChatProp
   const [model, setModel] = useState(DEFAULT_MODEL);
   const [provider, setProvider] = useState(DEFAULT_PROVIDER);
   const [modelList, setModelList] = useState(MODEL_LIST);
-  const [providerList, setProviderList] = useState([...new Set([...MODEL_LIST.map((m) => m.provider), 'Ollama', 'OpenAILike'])]);
+  const [providerList, setProviderList] = useState([...new Set([...MODEL_LIST.map((m) => m.provider), ...PROVIDER_LIST])]);
+  // TODO: Add API key
+  const [api_key, setApiKey] = useState("");
   const initialize = async () => {
     if (!isInitialized) {
-      const models= await initializeModelList();
-      const modelList = models;
-      const providerList = [...new Set([...models.map((m) => m.provider),"Ollama","OpenAILike"])];
+      const { modelList , providerList }= await initializeModelList();
       setModelList(modelList);
       setProviderList(providerList);
     }
@@ -184,7 +191,12 @@ export const ChatImpl = memo(({ initialMessages, storeMessageHistory }: ChatProp
     chatStore.setKey('aborted', false);
 
     runAnimation();
-
+    const message = { role: 'user', content: "" };
+    const body = {
+      model,
+      provider,
+      api_key,
+    }
     if (fileModifications !== undefined) {
       const diff = fileModificationsToHTML(fileModifications);
 
@@ -195,7 +207,7 @@ export const ChatImpl = memo(({ initialMessages, storeMessageHistory }: ChatProp
        * manually reset the input and we'd have to manually pass in file attachments. However, those
        * aren't relevant here.
        */
-      append({ role: 'user', content: `[Model: ${model}Provider: ${provider}]\n\n${diff}\n\n${_input}` });
+      message.content = `${diff}\n\n${_input}`;
 
       /**
        * After sending a new message we reset all modifications since the model
@@ -203,9 +215,11 @@ export const ChatImpl = memo(({ initialMessages, storeMessageHistory }: ChatProp
        */
       workbenchStore.resetAllFileModifications();
     } else {
-      append({ role: 'user', content: `[Model: ${model}Provider: ${provider}]\n\n${_input}` });
+      message.content = _input;
     }
-
+    append(message,{
+      body
+    })
     setInput('');
 
     resetEnhancer();

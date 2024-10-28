@@ -9,10 +9,15 @@ import SwitchableStream from '~/lib/.server/llm/switchable-stream';
 export async function action(args: ActionFunctionArgs) {
   return chatAction(args);
 }
+export type ChatRequest ={
+  messages: Messages;
+  model:string,
+  provider:string,
+  api_key:string
+}
 
 async function chatAction({ context, request }: ActionFunctionArgs) {
-  const { messages } = await request.json<{ messages: Messages }>();
-
+  const chatRequest = await request.json<ChatRequest>();
   const stream = new SwitchableStream();
 
   try {
@@ -34,13 +39,13 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
         messages.push({ role: 'assistant', content });
         messages.push({ role: 'user', content: CONTINUE_PROMPT });
 
-        const result = await streamText(messages, context.cloudflare.env, options);
+        const result = await streamText(chatRequest, context.cloudflare.env, options);
 
         return stream.switchSource(result.toAIStream());
       },
     };
 
-    const result = await streamText(messages, context.cloudflare.env, options);
+    const result = await streamText(chatRequest, context.cloudflare.env, options);
 
     stream.switchSource(result.toAIStream());
 

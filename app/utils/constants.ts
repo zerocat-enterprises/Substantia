@@ -45,6 +45,8 @@ const staticModels: ModelInfo[] = [
 ];
 
 export let MODEL_LIST: ModelInfo[] = [...staticModels];
+export const PROVIDER_LIST: string[] = ['Ollama', 'OpenAILike']
+
 export function hasModel(modelName:string,provider:string): boolean {
   for (const model of MODEL_LIST) {
     if ( model.provider === provider && model.name === modelName) {
@@ -63,17 +65,31 @@ export function getStaticModels(): ModelInfo[] {
   return [...staticModels];
 }
 export let isInitialized = false;
-
-export async function initializeModelList(): Promise<ModelInfo[]> {
+type ModelList={
+  modelList:ModelInfo[],
+  providerList:string[]
+}
+export async function initializeModelList(): Promise<ModelList> {
   if (isInitialized) {
-    return MODEL_LIST;
+    return {
+      modelList:MODEL_LIST,
+      providerList:[...new Set([...MODEL_LIST.map((m) => m.provider),...PROVIDER_LIST ])]
+    }
   }
   if (IS_SERVER){
     isInitialized = true;
-    return MODEL_LIST;
+    return {
+      modelList:MODEL_LIST,
+      providerList:[...new Set([...MODEL_LIST.map((m) => m.provider),...PROVIDER_LIST ])]
+    }
   }
   isInitialized = true;
   const response = await fetch('/api/models');
   MODEL_LIST = (await response.json()) as ModelInfo[];
-  return MODEL_LIST;
+
+  return {
+    modelList:MODEL_LIST,
+    providerList:[...new Set([...MODEL_LIST.map((m) => m.provider),...PROVIDER_LIST ])]
+
+  }
 }
