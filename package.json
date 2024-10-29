@@ -6,19 +6,6 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-<<<<<<< HEAD
-    "deploy": "PORT=7700 npm run build && wrangler pages deploy",
-    "build": "PORT=7700 remix vite:build",
-    "dev": "PORT=7700 remix vite:dev",
-    "test": "PORT=7700 vitest --run",
-    "test:watch": "PORT=7700 vitest",
-    "lint": "PORT=7700 eslint --cache --cache-location ./node_modules/.cache/eslint .",
-    "lint:fix": "PORT=7700 npm run lint -- --fix",
-    "start": "PORT=7700 bindings=$(./bindings.sh) && wrangler pages dev ./build/client $bindings --ip 0.0.0.0 --port 7700",
-    "typecheck": "PORT=7700 tsc",
-    "typegen": "PORT=7700 wrangler types",
-    "preview": "PORT=7700 pnpm run build && pnpm run start"
-=======
     "deploy": "pnpm run build && wrangler pages deploy",
     "dev:deploy": "pnpm run build && wrangler pages dev",
     "build": "remix vite:build",
@@ -31,7 +18,6 @@
     "typecheck": "tsc",
     "typegen": "wrangler types",
     "preview": "pnpm run build && pnpm run start"
->>>>>>> pr-89
   },
   "engines": {
     "node": ">=18.18.0"
