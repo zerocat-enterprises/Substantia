@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "7700:7700"
     environment:
       - NODE_ENV=production
       # Add any other environment variables your app needs
@@ -12,6 +12,8 @@ services:
       # - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       # - GROQ_API_KEY=${GROQ_API_KEY}
       # - OPEN_ROUTER_API_KEY=${OPEN_ROUTER_API_KEY}
+      - VITE_LOG_LEVEL=debug
+      - OLLAMA_API_BASE_URL=http://10.3.0.6:11434
     volumes:
       # This volume is for development purposes, allowing live code updates
       # Comment out or remove for production

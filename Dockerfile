@@ -23,7 +23,7 @@ RUN pnpm run build
 RUN chmod +x bindings.sh
 
 # Expose the port the app runs on (adjust if you specified a different port)
-EXPOSE 3000
+EXPOSE 7700
 
 # Start the application
 CMD ["pnpm", "run", "start"]
